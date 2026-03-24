@@ -16,10 +16,13 @@ logging.basicConfig(
 @app.route('/api/laliga/live', methods=['GET'])
 def get_live_scores():
     logging.info("Solicitud recibida: obtener partidos en vivo")
+
+    team_filter = request.args.get('team')
+
     try:
         response = requests.get(ESPN_API_URL)
         response.raise_for_status()
-        data = response.json()
+        data = response.json()        
         
         matches = []
         for event in data.get('events', []):
@@ -47,6 +50,11 @@ def get_live_scores():
                 'away_team': away_team.get('team', {}).get('displayName', 'Visitante') if away_team else 'Visitante',
                 'away_score': away_team.get('score', '0') if away_team else '0',
             }
+
+            if team_filter:
+                if team_filter.lower() not in match_info['home_team'].lower() and team_filter.lower() not in match_info['away_team'].lower():
+                    continue
+
             matches.append(match_info)
             logging.info(f"Se obtuvieron {len(matches)} partidos")
             
@@ -54,7 +62,8 @@ def get_live_scores():
             'success': True,
             'league': data.get('leagues', [{}])[0].get('name', 'La Liga'),
             'season': data.get('season', {}).get('year'),
-            'matches': matches
+            'matches': matches,
+            'filter': team_filter if team_filter else 'ninguno'
         })
         
     except requests.RequestException as e:
