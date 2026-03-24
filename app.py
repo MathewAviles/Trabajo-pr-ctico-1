@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-import requests
+import logging, requests
 
 app = Flask(__name__)
 
@@ -8,8 +8,14 @@ ESPN_API_URL = "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/score
 
 favorite_teams = []
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
 @app.route('/api/laliga/live', methods=['GET'])
 def get_live_scores():
+    logging.info("Solicitud recibida: obtener partidos en vivo")
     try:
         response = requests.get(ESPN_API_URL)
         response.raise_for_status()
@@ -42,6 +48,7 @@ def get_live_scores():
                 'away_score': away_team.get('score', '0') if away_team else '0',
             }
             matches.append(match_info)
+            logging.info(f"Se obtuvieron {len(matches)} partidos")
             
         return jsonify({
             'success': True,
@@ -51,6 +58,7 @@ def get_live_scores():
         })
         
     except requests.RequestException as e:
+        logging.error(f"Error al obtener datos de ESPN: {str(e)}")
         return jsonify({
             'success': False,
             'error': f"Error al obtener los datos: {str(e)}"
@@ -67,15 +75,18 @@ def home():
 
 @app.route('/api/laliga/favorite', methods=['POST'])
 def add_favorite_team():
+    logging.info("Solicitud POST: agregar equipo favorito")
     data = request.get_json(silent=True)
 
     if not data:
+        logging.warning("Error: No se enviaron datos")
         return jsonify({
             'success': False,
             'error': 'No se enviaron datos'
         }), 400
 
     if 'team' not in data:
+        logging.warning("Error: campo 'team' es obligatorio")
         return jsonify({
             'success': False,
             'error': 'El campo "team" es obligatorio'
@@ -84,12 +95,14 @@ def add_favorite_team():
     team = data['team']
 
     if not isinstance(team, str) or team.strip() == "":
+        logging.warning("Error: El campo 'team' debe ser un texto válido")
         return jsonify({
             'success': False,
             'error': 'El campo "team" debe ser un texto válido'
         }), 400
     
     favorite_teams.append(team)
+    logging.info(f"Equipo agregado: {team}")
 
     return jsonify({
         'success': True,
@@ -98,7 +111,8 @@ def add_favorite_team():
     }), 201
 
 @app.route('/api/laliga/favorite', methods=['GET'])
-def get_favorites():
+def get_favorite_teams():
+    logging.info("Solicitud GET: obtener equipos favoritos")
     return jsonify({
         'success': True,
         'favorites': favorite_teams
