@@ -1,10 +1,12 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import requests
 
 app = Flask(__name__)
 
 # URL de la API pública de ESPN para La Liga (esp.1)
 ESPN_API_URL = "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard"
+
+favorite_teams = []
 
 @app.route('/api/laliga/live', methods=['GET'])
 def get_live_scores():
@@ -61,6 +63,45 @@ def home():
         "endpoints": {
             "resultados en vivo": "/api/laliga/live"
         }
+    })
+
+@app.route('/api/laliga/favorite', methods=['POST'])
+def add_favorite_team():
+    data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({
+            'success': False,
+            'error': 'No se enviaron datos'
+        }), 400
+
+    if 'team' not in data:
+        return jsonify({
+            'success': False,
+            'error': 'El campo "team" es obligatorio'
+        }), 400
+
+    team = data['team']
+
+    if not isinstance(team, str) or team.strip() == "":
+        return jsonify({
+            'success': False,
+            'error': 'El campo "team" debe ser un texto válido'
+        }), 400
+    
+    favorite_teams.append(team)
+
+    return jsonify({
+        'success': True,
+        'message': f'Equipo "{team}" agregado a favoritos',
+        'favorites': favorite_teams
+    }), 201
+
+@app.route('/api/laliga/favorite', methods=['GET'])
+def get_favorites():
+    return jsonify({
+        'success': True,
+        'favorites': favorite_teams
     })
 
 if __name__ == '__main__':
