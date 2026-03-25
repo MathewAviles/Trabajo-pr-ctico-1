@@ -86,18 +86,13 @@ GET /api/laliga/live?team=Barcelona
 # EVIDENCIA
 ## API funcionando localmente
 
-
 ## Construcción de imagen Docker
 
-
 ## Contenedor ejecutándose
-
 
 ## Prueba curl exitosa
 
 
 ## API desplegada en Cloud
 
-
 ## Endpoint accesible públicamente
-
