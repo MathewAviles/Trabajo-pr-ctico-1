@@ -85,14 +85,23 @@ GET /api/laliga/live?team=Barcelona
 
 # EVIDENCIA
 ## API funcionando localmente
+![Preview](images/APIFuncionandoLocalmente.png)
 
 ## Construcción de imagen Docker
+![Preview](images/ConstrucciónImagenDockerINICIO.png)
+![Preview](images/ConstrucciónImagenDockerFINAL.png)
 
 ## Contenedor ejecutándose
+![Preview](images/ContenedorEjecutandoseDOCKER.png)
+![Preview](images/ContenedorEjecutandoseNAVEGADOR.png)
 
 ## Prueba curl exitosa
-
+![Preview](images/PruebaCURLExitosa1.png)
+![Preview](images/PruebaCURLExitosa2.png)
+![Preview](images/PruebaCURLExitosa3.png)
 
 ## API desplegada en Cloud
+![Preview](images/APIDesplegadaNube.png)
 
 ## Endpoint accesible públicamente
+https://api-laliga.onrender.com/
