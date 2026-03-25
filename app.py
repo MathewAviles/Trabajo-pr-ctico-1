@@ -129,12 +129,7 @@ def get_favorite_teams():
 
 if __name__ == '__main__':
     # Inicia el servidor de desarrollo de Flask
-    # app.run(
-    #     debug=True,
-    #     port=5000
-    # )
-    # Inicio de app para Docker
     app.run(
-        host='0.0.0.0',
-        port=8080
+        debug=True,
+        port=5000
     )
